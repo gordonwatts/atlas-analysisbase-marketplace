@@ -1,7 +1,7 @@
 {
-  "name": "atlas-analysisbase",
+  "name": "atlas-analysisbase-marketplace",
   "interface": {
-    "displayName": "Atlas Analysisbase"
+    "displayName": "Atlas Analysisbase Marketplace"
   },
   "plugins": [
     {
