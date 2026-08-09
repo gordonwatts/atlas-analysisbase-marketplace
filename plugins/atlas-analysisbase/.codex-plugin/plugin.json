@@ -1,0 +1,24 @@
+{
+  "name": "atlas-analysisbase",
+  "version": "0.1.0",
+  "description": "Systematic-aware CERN ATLAS AnalysisBase workflows for custom algorithms, small-R jet uncertainties, and ntuple output.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Atlas Analysisbase",
+    "shortDescription": "Build systematic-aware AnalysisBase algorithms.",
+    "longDescription": "Scaffolds and configures CERN ATLAS AnalysisBase work areas, CPRun PHYSLITE workflows, systematic-aware C++ algorithms, small-R jet uncertainties, and ntuple dumper variables.",
+    "developerName": "Local developer",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a systematic-aware AnalysisBase algorithm.",
+      "Configure small-R jet systematics and ntuple output.",
+      "Build and smoke-test my AnalysisBase work area."
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AnalysisBase"
+  short_description: "Build AnalysisBase work areas and systematic-aware algorithms"
+  default_prompt: "Use $analysis-base to create or configure an AnalysisBase work area with systematic-aware algorithms, small-R jet systematics, and ntuple output."
