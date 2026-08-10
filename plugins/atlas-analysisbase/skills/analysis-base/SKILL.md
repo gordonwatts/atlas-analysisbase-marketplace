@@ -43,8 +43,8 @@ block inside the corresponding `Jets` entry:
 
 ```yaml
 Uncertainties:
-- containerName: AnaJets
-  jetInput: EMPFlow
+  - containerName: AnaJets
+    jetInput: EMPFlow
 ```
 
 This creates the JES/JER jet-container variations that a jet algorithm can
@@ -89,6 +89,26 @@ Add a top-level YAML instance for the block, for example
 the ntuple maps `jet_` to `OutJets`, so the decoration is copied into the
 output container before thinning. Keep `%SYS%` and `noSys: false` for values
 that vary with systematics.
+
+### Disabling output variables
+
+`Output.commands` accepts regular-expression patterns for selecting output
+variables to disable. This applies to variables produced by any configured
+container or algorithm block.
+
+Use anchors when disabling one exact variable:
+
+```yaml
+Output:
+  commands:
+    - disable ^jet_e$
+```
+
+Here ^jet_e$ matches only jet_e. An unanchored pattern such as jet_e
+may also match longer output names containing that substring. Standard
+variables can be added automatically by an output container mapping, so check
+the CPRun configuration log and resulting tree when an unexpected variable
+appears.
 
 ## Validate
 
