@@ -119,11 +119,8 @@ short smoke test before a full sample:
 runPHYSLITEAnalysis "$ALRB_Test_File" 5 2>&1 | tee smoke.log
 ```
 
-Confirm CPRun reports `runSystematics: True`, the worker succeeds, `output.root`
-contains an `analysis` tree, and the tree has nominal and representative
-up/down output branches. For a derived jet variable, compare each output
-branch to the corresponding systematic jet input branch. Do not start an
-all-events run without estimating its cost.
+Confirm CPRun reports `runSystematics: True`, the worker succeeds, and the ROOT
+file under `workDir/data-<streamName>/` (defaults to `workDir/data-ANALYSIS/`) contains an `analysis` tree with nominal and representative up/down output branches. For a derived jet variable, compare each output branch to the corresponding systematic jet input branch. Do not start an all-events run without estimating its cost.
 
 Preserve existing work, use `apply_patch` for edits, rerun CMake after adding
 files, and record release-specific gaps when the user requests durable notes.
