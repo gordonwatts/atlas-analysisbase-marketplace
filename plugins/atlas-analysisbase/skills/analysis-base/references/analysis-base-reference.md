@@ -118,7 +118,7 @@ Use the fixed PHYSLITE tutorial input when applicable:
 ```bash
 export ALRB_TutorialData=/cvmfs/atlas.cern.ch/repo/tutorials/asg/cern-mar2025
 export ALRB_Test_File="$ALRB_TutorialData/mc20_13TeV.312276.aMcAtNloPy8EG_A14N30NLO_LQd_mu_ld_0p3_beta_0p5_2ndG_M1000.deriv.DAOD_PHYSLITE.e7587_a907_r14861_p6117/DAOD_PHYSLITE.37791038._000001.pool.root.1"
-runPHYSLITEAnalysis "$ALRB_Test_File" 5 2>&1 | tee smoke.log
+CPRun.py "$ALRB_Test_File" 5 2>&1 | tee smoke.log
 ```
 
 Check `output.root`, the `analysis` tree, `runSystematics: True`, worker

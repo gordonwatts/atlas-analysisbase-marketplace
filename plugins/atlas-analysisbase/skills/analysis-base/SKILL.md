@@ -115,8 +115,11 @@ appears.
 Validate the input with `checkxAOD.py` and a ROOT `CollectionTree` check. Run a
 short smoke test before a full sample:
 
+Run a short smoke test with the standard `CPRun.py` entry point:
+
 ```bash
-runPHYSLITEAnalysis "$ALRB_Test_File" 5 2>&1 | tee smoke.log
+printf '%s\n' "$ALRB_Test_File" > input.txt
+CPRun.py -i input.txt -t config.yaml -e 5 2>&1 | tee smoke.log
 ```
 
 Confirm CPRun reports `runSystematics: True`, the worker succeeds, and the ROOT
