@@ -25,7 +25,24 @@ source ../build/<platform>/setup.sh
 ```
 
 On hosts where the factory scanner loads the wrong C++ runtime, prepend the
-release GCC `lib64` directory to `LD_LIBRARY_PATH` before building or running.
+release GCC `lib64` directory to `LD_LIBRARY_PATH` before building or running:
+
+- This error is caused by the host system placing another runtime first in the `LD_LIBRARY_PATH`. A clean system and `asetup` will not require this.
+- A good smoke test after doing the `source` above is:
+
+````bash
+command -v g++
+g++ --version
+g++ -print-file-name=libstdc++.so.6
+echo "$LD_LIBRARY_PATH" | tr ':' '\n'
+
+- If necessary, prepend the directory containing the release-selected
+libstdc++.so.6:
+
+```bash
+atlas_gcc_runtime_dir="$(dirname "$(g++ -print-file-name=libstdc++.so.6)")"
+export LD_LIBRARY_PATH="${atlas_gcc_runtime_dir}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+````
 
 ## Common CP systematics
 
