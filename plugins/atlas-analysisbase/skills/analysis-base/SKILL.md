@@ -8,6 +8,10 @@ description: Create and configure CERN ATLAS AnalysisBase work areas, CPRun PHYS
 Build reproducible ATLAS AnalysisBase analyses with `CPRun.py`. Read
 `references/analysis-base-reference.md` for the compact C++ and YAML patterns.
 
+Below include instrucitons for a smoke test - which is good to make it work. But the user is not likely going
+to be interested in the smoke test output - so don't include that in the final result. It is, however, a good
+way for you to make efficient progress and check that you are on the right track.
+
 ## Setup
 
 Inspect the requested release, input format, CVMFS availability, and platform;
@@ -23,26 +27,6 @@ cmake ../source
 cmake --build . --parallel "$(nproc)"
 source ../build/<platform>/setup.sh
 ```
-
-On hosts where the factory scanner loads the wrong C++ runtime, prepend the
-release GCC `lib64` directory to `LD_LIBRARY_PATH` before building or running:
-
-- This error is caused by the host system placing another runtime first in the `LD_LIBRARY_PATH`. A clean system and `asetup` will not require this.
-- A good smoke test after doing the `source` above is:
-
-````bash
-command -v g++
-g++ --version
-g++ -print-file-name=libstdc++.so.6
-echo "$LD_LIBRARY_PATH" | tr ':' '\n'
-
-- If necessary, prepend the directory containing the release-selected
-libstdc++.so.6:
-
-```bash
-atlas_gcc_runtime_dir="$(dirname "$(g++ -print-file-name=libstdc++.so.6)")"
-export LD_LIBRARY_PATH="${atlas_gcc_runtime_dir}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-````
 
 ## Common CP systematics
 
