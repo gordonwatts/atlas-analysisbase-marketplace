@@ -3,6 +3,18 @@
 Validated with `AnalysisBase,25.2.73` on `aarch64-el9-gcc14-opt`. Check the
 release and generated platform before using these examples.
 
+## Setting up the environment
+
+The following two lines, at the top of a script (or via the shell) will setup release 25.2.73. You should assume
+you are running on a well configured machine with `cvmfs`. If that first line fails because that file can't be found,
+then you should report the error back to the user: the machine you are running on is not configured and the user must
+move to another machine.
+
+```sh
+source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
+asetup AnalysisBase,25.2.73
+```
+
 ## Package skeleton
 
 ```cmake
