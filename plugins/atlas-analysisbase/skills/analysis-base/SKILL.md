@@ -92,7 +92,7 @@ CommonServices:
   runSystematics: true
 ```
 
-Add `   FilterSystematics: '^(?:(?!PseudoData).)*$'` to use a regex to filter out only the systematics you want to run. Without it you'll run all systematic errors ("Full").
+Add `   filterSystematics: '^(?:(?!PseudoData).)*$'` under `CommonServices` to use a regex to filter out only the systematics you want to run. Without it you'll run all systematic errors ("Full").
 
 For small-R `AntiKt4EMPFlowJets`, add the uncertainty
 block inside the corresponding `Jets` entry in your yaml file:
