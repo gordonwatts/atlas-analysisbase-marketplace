@@ -92,10 +92,9 @@ CommonServices:
   runSystematics: true
 ```
 
-If you want to control what systematics are run, don't forget to add enableExpertMode: true` above!
+Add `   FilterSystematics: '^(?:(?!PseudoData).)*$'` to use a regex to filter out only the systematics you want to run. Without it you'll run all systematic errors ("Full").
 
-Remove any `filterSystematics`. “Full” means all variations registered by the
-configured CP blocks. For small-R `AntiKt4EMPFlowJets`, add the uncertainty
+For small-R `AntiKt4EMPFlowJets`, add the uncertainty
 block inside the corresponding `Jets` entry in your yaml file:
 
 ```yaml
@@ -108,6 +107,8 @@ This creates the JES/JER jet-container variations that a jet algorithm can
 read. For the tested PHYSLITE Run-2 YAML also keep the output commands that
 disable unavailable `actualInteractionsPerCrossing` and
 `tau_passTATTauMuonOLR` decorations.
+
+When running, check the log for a list of all the systematics to make sure the exected ones are running. Systematics are very CPU intensive - so it is very worth running a 5 event smoke test to make expected systematics are running.
 
 ## Validate
 
