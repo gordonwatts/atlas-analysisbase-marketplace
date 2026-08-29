@@ -109,29 +109,16 @@ read. For the tested PHYSLITE Run-2 YAML also keep the output commands that
 disable unavailable `actualInteractionsPerCrossing` and
 `tau_passTATTauMuonOLR` decorations.
 
-### Jet systematics
-
-For small-R `AntiKt4EMPFlowJets`, put this inside the matching `Jets` entry:
-
-```yaml
-Uncertainties:
-  - containerName: AnaJets
-    jetInput: EMPFlow
-```
-
-With `CommonServices.runSystematics: true` and no filter, this produces the
-JES/JER variations consumed by the systematic read handle.
-
 ## Validate
 
 Validate the input with `checkxAOD.py` and a ROOT `CollectionTree` check. Run a
 short smoke test before a full sample:
 
-Run a short smoke test with the standard `CPRun.py` entry point:
+Run a short smoke test with the standard `CPRun.py` entry point. This should be run in the `run` directory and will produce the output root file there as `output.root`. The `-e 5` will run just 5 events, which is great for smoke test.
 
 ```bash
 printf '%s\n' "$ALRB_Test_File" > input.txt
-CPRun.py -i input.txt -t config.yaml -e 5 2>&1 | tee smoke.log
+CPRun.py -i input.txt -t config.yaml -o output.root -e 5 2>&1 | tee smoke.log
 ```
 
 Confirm CPRun reports `runSystematics: True`, the worker succeeds, and the ROOT
