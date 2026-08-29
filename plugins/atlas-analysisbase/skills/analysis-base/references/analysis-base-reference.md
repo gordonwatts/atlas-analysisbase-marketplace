@@ -1,21 +1,22 @@
-# AnalysisBase reference
+# AnalysisBase Custom Packages
 
-Validated with `AnalysisBase,25.2.73` on `aarch64-el9-gcc14-opt`. Check the
-release and generated platform before using these examples.
+There are several steps to scaffold a custom package.
 
-## Setting up the environment
+If creating from scratch, create a new directory with the package name in your `source` directory. We'll call it `MyAnalysis` for this. Then inside this directory you'll need to create the following sub-directories:
 
-The following two lines, at the top of a script (or via the shell) will setup release 25.2.73. You should assume
-you are running on a well configured machine with `cvmfs`. If that first line fails because that file can't be found,
-then you should report the error back to the user: the machine you are running on is not configured and the user must
-move to another machine.
+* `MyAnalysis`: This is where all of your (public) C++ header files go. By ATLAS convention it is always named the same as the package itself.
 
-```sh
-source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
-asetup AnalysisBase,25.2.73
-```
+* Root: This is where most of your C++ source files go, as well as any private header files.
+
+* `src`: This is where Athena-specific C++ source files and private header files go. Generally, files in Root are visible in both Athena and AnalysisBase, while files in src are only visible in Athena. If this is an AB only package, create the directory by convention.
+
+* `share`: This is where configuration and small data files go that you need to pick up at run time.
+
+* `python`: This is where python modules go. In particular, files here are used to schedule predefined algorithms that should be executed in addition to your analysis algorithm.
 
 ## Package skeleton
+
+The following `CMakeLists.txt` should go at the root of your package directory (`MyAnalysis`):
 
 ```cmake
 atlas_subdir( MyAnalysis )
@@ -33,7 +34,9 @@ atlas_install_python_modules( python/*.py )
 atlas_install_data( data/*.yaml )
 ```
 
-Register components with the active factory header:
+Register the component with `DECLARE_COMPONENT` and
+`AsgTools/AsgComponentFactories.h`; link the package library against
+`AnaAlgorithmLib`, `SystematicsHandlesLib`, and the object library it reads. This should be in `MyAnalysis/src/components/MyAnalysis_entries.cxx`.
 
 ```cpp
 #include "MyAnalysis/MyAlgorithm.h"
@@ -41,7 +44,35 @@ Register components with the active factory header:
 DECLARE_COMPONENT (MyAnalysis::MyAlgorithm)
 ```
 
+## Building Custom Packages
+
+Add packages under `source/`, and create a `build` area to build in:
+
+```bash
+cd AnalysisTutorial/build
+cmake ../source
+cmake --build . --parallel "$(nproc)"
+source ../build/<platform>/setup.sh
+```
+
 ## Systematic-aware algorithm
+
+To make the algorithm systematics aware you'll need to add a few other things:
+
+Use a C++ `EL::AnaAlgorithm` with `CP::SysListHandle`,
+`CP::SysReadHandle<T>`, and `CP::SysWriteDecorHandle<T>`. Initialize the
+handles, loop over `m_systematicsList.systematicsVector()`, retrieve the
+variation with the active release API, calculate from that variation, and
+write a `%SYS%` decoration. In AnalysisBase 25.2.73 the jet read pattern is:
+
+```cpp
+const xAOD::JetContainer* jets = nullptr;
+ANA_CHECK (m_jets.retrieve (jets, sys));
+for (const xAOD::Jet* jet : *jets) {
+  m_output.set (*jet, calculate (*jet), sys);
+  m_output.lock (*jet, sys);
+}
+```
 
 ```cpp
 #include <AnaAlgorithm/AnaAlgorithm.h>
@@ -109,19 +140,6 @@ def makeAlgs(self, config):
 When `Output` maps `jet_` to `OutJets`, place the block before `Thinning` so
 the decoration is copied into `OutJets` before the ntuple maker runs. Keep
 `noSys` false for systematic-dependent values.
-
-## Jet systematics
-
-For small-R `AntiKt4EMPFlowJets`, put this inside the matching `Jets` entry:
-
-```yaml
-Uncertainties:
-- containerName: AnaJets
-  jetInput: EMPFlow
-```
-
-With `CommonServices.runSystematics: true` and no filter, this produces the
-JES/JER variations consumed by the systematic read handle.
 
 ## Smoke test
 

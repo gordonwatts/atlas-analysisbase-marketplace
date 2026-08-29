@@ -5,97 +5,69 @@ description: Create and configure CERN ATLAS AnalysisBase work areas, CPRun PHYS
 
 # AnalysisBase
 
-Build reproducible ATLAS AnalysisBase analyses with `CPRun.py`. Read
-`references/analysis-base-reference.md` for the compact C++ and YAML patterns.
+AnalysisBase (AB) is the general ATLAS analysis framework, used by physicists to access almost all analysis data formats (derivations like DAOD_PHYSLITE, DAOD_PHYS, DAOD_LLP1, etc). It is a C++ framework with Python steering, and it is built on top of the EventLoop framework. It provides a set of common tools for physics analysis, including systematic uncertainty handling, jet calibration, and more. The framework is driven by a YAML configuration file, which specifies the input data, algorithms to run, and output formats. You can add custom algorithms to dump variables not supported by default (or calculate derived quantities).
 
-Below include instrucitons for a smoke test - which is good to make it work. But the user is not likely going
-to be interested in the smoke test output - so don't include that in the final result. It is, however, a good
-way for you to make efficient progress and check that you are on the right track.
+- Create, build, and configure custom AB algorithms - read the skill reference file `references/analysis-base-reference.md`
 
-## Setup
+Below are instructions for basic running. If you only need the standard output variables (associated with any object like jets, electrons, muons, etc), you can skip the custom algorithm steps and just use the standard configuration files.
 
-Inspect the requested release, input format, CVMFS availability, and platform;
-never assume `x86_64`. For the validated setup use `AnalysisBase,25.2.73` and
-the generated platform directory, commonly `aarch64-el9-gcc14-opt`.
+## Environment Setup
 
-Create or preserve the work area, add packages under `source/`, then build:
+You'll need to setup the `sh` environment with the release before working. Once that is done, you'll need to build any packages you create.
 
-```bash
-source /cvmfs/atlas.cern.ch/repo/sw/software/25.2/AnalysisBase/25.2.73/InstallArea/<platform>/setup.sh
-cd AnalysisTutorial/build
-cmake ../source
-cmake --build . --parallel "$(nproc)"
-source ../build/<platform>/setup.sh
+The following lines, at the top of a script (or via the shell) will setup release 25.2.73. You should assume
+you are running on a well configured machine with `cvmfs`. If that first line fails because that file can't be found,
+then you should report the error back to the user: the machine you are running on is not configured and the user must
+move to another machine.
+
+For the validated setup use `AnalysisBase,25.2.73` - the user may need to operate in a different release, of course.
+
+```sh
+# The ATLAS setup scripts require unset variables to be allowed
+set +e +u +o pipefail
+source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
+asetup AnalysisBase,25.2.73
+set -euo pipefail
 ```
 
-## Common CP systematics
+You'll need to do this only once (or inside a script that requires it).
 
-For full configured systematics, set:
+## Directory Layout
 
-```yaml
-CommonServices:
-  runSystematics: true
-  enableExpertMode: true
+Build directory with the following structure:
+
+- `source` Put top level CMakeLists.txt and other source files here. Your configuration `yaml` file should go here as well. If you create any new analysis packages (or check them out) they will be placed under this `source` directory.
+
+* `build`: This is where all the files created by the build system go. If you build a custom algoirthm, this is where the output of the `cmake` command will go.
+
+* `run`: This is where you actually run your programs, collect your output files, etc. For example, output root files will be written here. You can also put your input files here, or you can point to them in a different location.
+
+## `yaml` configuration
+
+AnalysisBase is steered by a YAML configuration file. The `CPRun.py` entry point reads the YAML, creates the requested algorithms, and schedules them with the configured input and output.
+
+Example configuration files for Run 2 and Run 3 processing can be found in `$AnalysisBase_DIR/src/PhysicsAnalysis/Algorithms/AnalysisAlgorithmsConfig/data` ($AnalysisBase_DIR is defined after the `asetup` command).
+
+### Output variables
+
+Here is an example output block that will write out all the EventInfo variables with a `evt_` prefix:
+
+```
+# Specify the name of the output tree and any variables associated
+# with a container to save. Only write out the EventInfo container variables
+Output:
+    treeName: 'analysis'
+    # Variables associated with containers other than MET
+    #   Syntax without systematics: '<Container>_NOSYS -> <branch name>'
+    #   Syntax with systematics: '<Container>_%SYS% -> <branch name>'
+    vars: []
+    containers:
+        'evt_': 'EventInfo'
 ```
 
-Remove any `filterSystematics`. “Full” means all variations registered by the
-configured CP blocks. For small-R `AntiKt4EMPFlowJets`, add the uncertainty
-block inside the corresponding `Jets` entry:
-
-```yaml
-Uncertainties:
-  - containerName: AnaJets
-    jetInput: EMPFlow
-```
-
-This creates the JES/JER jet-container variations that a jet algorithm can
-read. For the tested PHYSLITE Run-2 YAML also keep the output commands that
-disable unavailable `actualInteractionsPerCrossing` and
-`tau_passTATTauMuonOLR` decorations.
-
-## Custom systematic-aware algorithms
-
-Use a C++ `EL::AnaAlgorithm` with `CP::SysListHandle`,
-`CP::SysReadHandle<T>`, and `CP::SysWriteDecorHandle<T>`. Initialize the
-handles, loop over `m_systematicsList.systematicsVector()`, retrieve the
-variation with the active release API, calculate from that variation, and
-write a `%SYS%` decoration. In AnalysisBase 25.2.73 the jet read pattern is:
-
-```cpp
-const xAOD::JetContainer* jets = nullptr;
-ANA_CHECK (m_jets.retrieve (jets, sys));
-for (const xAOD::Jet* jet : *jets) {
-  m_output.set (*jet, calculate (*jet), sys);
-  m_output.lock (*jet, sys);
-}
-```
-
-Register the component with `DECLARE_COMPONENT` and
-`AsgTools/AsgComponentFactories.h`; link the package library against
-`AnaAlgorithmLib`, `SystematicsHandlesLib`, and the object library it reads.
-
-## Scheduling and ntuple output
-
-Plain CPRun YAML does not schedule arbitrary user components. Add a Python
-`ConfigBlock` through `AddConfigBlocks`; its `makeAlgs` must call
-`config.createAlgorithm`, set the systematic input name with
-`config.readName(...)`, and call:
-
-```python
-config.addOutputVar(containerName, "myVariable_%SYS%", "myVariable")
-```
-
-Add a top-level YAML instance for the block, for example
-`GordonsPT: {containerName: AnaJets}`. Insert the block at `pos: Thinning` when
-the ntuple maps `jet_` to `OutJets`, so the decoration is copied into the
-output container before thinning. Keep `%SYS%` and `noSys: false` for values
-that vary with systematics.
-
-### Disabling output variables
-
-`Output.commands` accepts regular-expression patterns for selecting output
+The `Output.commands` part of the config file accepts regular-expression patterns for selecting output
 variables to disable. This applies to variables produced by any configured
-container or algorithm block.
+container or algorithm block. Note that by default only the basics are dumped. See example file above for syntax.
 
 Use anchors when disabling one exact variable:
 
@@ -110,6 +82,45 @@ may also match longer output names containing that substring. Standard
 variables can be added automatically by an output container mapping, so check
 the CPRun configuration log and resulting tree when an unexpected variable
 appears.
+
+### Common CP systematics
+
+For full configured systematics, set:
+
+```yaml
+CommonServices:
+  runSystematics: true
+```
+
+If you want to control what systematics are run, don't forget to add enableExpertMode: true` above!
+
+Remove any `filterSystematics`. “Full” means all variations registered by the
+configured CP blocks. For small-R `AntiKt4EMPFlowJets`, add the uncertainty
+block inside the corresponding `Jets` entry in your yaml file:
+
+```yaml
+Uncertainties:
+  - containerName: AnaJets
+    jetInput: EMPFlow
+```
+
+This creates the JES/JER jet-container variations that a jet algorithm can
+read. For the tested PHYSLITE Run-2 YAML also keep the output commands that
+disable unavailable `actualInteractionsPerCrossing` and
+`tau_passTATTauMuonOLR` decorations.
+
+### Jet systematics
+
+For small-R `AntiKt4EMPFlowJets`, put this inside the matching `Jets` entry:
+
+```yaml
+Uncertainties:
+  - containerName: AnaJets
+    jetInput: EMPFlow
+```
+
+With `CommonServices.runSystematics: true` and no filter, this produces the
+JES/JER variations consumed by the systematic read handle.
 
 ## Validate
 
