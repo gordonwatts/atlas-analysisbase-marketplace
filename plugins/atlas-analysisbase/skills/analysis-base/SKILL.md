@@ -85,6 +85,8 @@ appears.
 
 ### Common CP systematics
 
+Systematics are very expensive to run. Do not run them unless the user asks for them explicitly.
+
 For full configured systematics, set:
 
 ```yaml
