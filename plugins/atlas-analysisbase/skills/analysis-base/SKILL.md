@@ -13,11 +13,13 @@ Below are instructions for basic running. If you only need the standard output v
 
 This skill when it uses the word `container` means a data container, for example, the jet collection is in the jet container. If you are looking for the jet pt (transverse momentum), then it is going to be in the jet container.
 
-## Environment Setup
+## Mandatory Environment Setup
 
-You'll need to setup the `sh` environment with the release before working. Once that is done, you'll need to build any packages you create.
+You'll need to setup the shell's environment with the release before working. Once that is done, you'll need to build any packages you create.
 
-The following lines, at the top of a script (or via the shell) will setup release 25.2.73. You should assume
+You _must_ setup the environment before running any of the tools using the below lines. You must always use the native host shell (or invoke bash, etc.). Never run anything in a container.
+
+The following lines, at the top of a script (or via the shell) will setup AnalysisBase release 25.2.73. You should assume
 you are running on a well configured machine with `cvmfs`. If that first `source` fails because that file can't be found,
 then you should report the error back to the user: the machine you are running on is not configured and the user must
 move to another machine. If the `asetup` fails, then that is because the release is missing - you may have to search for other releases.
@@ -32,7 +34,7 @@ asetup AnalysisBase,25.2.73
 set -euo pipefail
 ```
 
-You'll need to do this only once (or inside a script that requires it). Except under user-requested circumstances, there should be no reason to use docker or any other container technology.
+You'll need to do this only once (or inside a script that requires it).
 
 ## Directory Layout
 
