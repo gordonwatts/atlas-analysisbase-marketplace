@@ -11,16 +11,18 @@ AnalysisBase (AB) is the general ATLAS analysis framework, used by physicists to
 
 Below are instructions for basic running. If you only need the standard output variables (associated with any object like jets, electrons, muons, etc), you can skip the custom algorithm steps and just use the standard configuration files.
 
+This skill when it uses the word `container` means a data container, for example, the jet collection is in the jet container. If you are looking for the jet pt (transverse momentum), then it is going to be in the jet container.
+
 ## Environment Setup
 
 You'll need to setup the `sh` environment with the release before working. Once that is done, you'll need to build any packages you create.
 
 The following lines, at the top of a script (or via the shell) will setup release 25.2.73. You should assume
-you are running on a well configured machine with `cvmfs`. If that first line fails because that file can't be found,
+you are running on a well configured machine with `cvmfs`. If that first `source` fails because that file can't be found,
 then you should report the error back to the user: the machine you are running on is not configured and the user must
-move to another machine.
+move to another machine. If the `asetup` fails, then that is because the release is missing - you may have to search for other releases.
 
-For the validated setup use `AnalysisBase,25.2.73` - the user may need to operate in a different release, of course.
+For the tutorial validated setup use `AnalysisBase,25.2.73` - the user may need to operate in a different release, of course.
 
 ```sh
 # The ATLAS setup scripts require unset variables to be allowed
@@ -30,7 +32,7 @@ asetup AnalysisBase,25.2.73
 set -euo pipefail
 ```
 
-You'll need to do this only once (or inside a script that requires it).
+You'll need to do this only once (or inside a script that requires it). Except under user-requested circumstances, there should be no reason to use docker or any other container technology.
 
 ## Directory Layout
 
