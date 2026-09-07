@@ -183,4 +183,3 @@ CPRun.py "$ALRB_Test_File" 5 2>&1 | tee smoke.log
 Check `output.root`, the `analysis` tree, `runSystematics: True`, worker
 success, and nominal/up/down branches. For a derived jet value, verify each
 output branch against the matching systematic `jet_pt` branch.
-
