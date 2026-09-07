@@ -143,4 +143,3 @@ files, and record release-specific gaps when the user requests durable notes.
 If a run script uses `set -u`, temporarily disable nounset while sourcing the
 generated `build/<platform>/setup.sh`, then restore it before running the job;
 generated setup scripts may reference optional package variables that are unset.
-
