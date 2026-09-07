@@ -110,9 +110,16 @@ Uncertainties:
 ```
 
 This creates the JES/JER jet-container variations that a jet algorithm can
-read. For the tested PHYSLITE Run-2 YAML also keep the output commands that
-disable unavailable `actualInteractionsPerCrossing` and
-`tau_passTATTauMuonOLR` decorations.
+read. Output command patterns fail when they match no scheduled branch. For
+release- or configuration-dependent exclusions, use `optional disable`; for
+example, the tested PHYSLITE Run-2 YAML may need:
+
+```yaml
+Output:
+  commands:
+    - optional disable actualInteractionsPerCrossing
+    - optional disable tau_passTATTauMuonOLR
+```
 
 When running, check the log for a list of all the systematics to make sure the exected ones are running. Systematics are very CPU intensive - so it is very worth running a 5 event smoke test to make expected systematics are running.
 
@@ -133,3 +140,7 @@ file under `workDir/data-<streamName>/` (defaults to `workDir/data-ANALYSIS/`) c
 
 Preserve existing work, use `apply_patch` for edits, rerun CMake after adding
 files, and record release-specific gaps when the user requests durable notes.
+If a run script uses `set -u`, temporarily disable nounset while sourcing the
+generated `build/<platform>/setup.sh`, then restore it before running the job;
+generated setup scripts may reference optional package variables that are unset.
+
