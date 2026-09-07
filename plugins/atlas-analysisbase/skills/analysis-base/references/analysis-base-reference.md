@@ -122,6 +122,13 @@ for (const auto& sys : m_systematicsList.systematicsVector()) {
 Use the corresponding systematic object and `%SYS%` decoration for other
 container types. Do not write all variations into one fixed decoration.
 
+`SysListHandle` derives the algorithm's active variations from its registered
+handle dependencies. If a derived algorithm must run for a systematic category
+that does not change the object used in its numerical formula, declare,
+initialize, and retrieve a `SysReadHandle` for an input carrying that category;
+otherwise those variations may appear in the global list but be pruned from
+the algorithm and its output branches.
+
 ## CPRun configuration and ntuple output
 
 Plain CPRun YAML does not schedule arbitrary user components. Register a Python
@@ -177,9 +184,10 @@ Use the fixed PHYSLITE tutorial input when applicable:
 ```bash
 export ALRB_TutorialData=/cvmfs/atlas.cern.ch/repo/tutorials/asg/cern-mar2025
 export ALRB_Test_File="$ALRB_TutorialData/mc20_13TeV.312276.aMcAtNloPy8EG_A14N30NLO_LQd_mu_ld_0p3_beta_0p5_2ndG_M1000.deriv.DAOD_PHYSLITE.e7587_a907_r14861_p6117/DAOD_PHYSLITE.37791038._000001.pool.root.1"
-CPRun.py "$ALRB_Test_File" 5 2>&1 | tee smoke.log
+CPRun.py -i "$ALRB_Test_File" -t config.yaml -o output.root -e 5 2>&1 | tee smoke.log
 ```
 
-Check `output.root`, the `analysis` tree, `runSystematics: True`, worker
-success, and nominal/up/down branches. For a derived jet value, verify each
-output branch against the matching systematic `jet_pt` branch.
+Check `output.root`, the `analysis` tree, the requested systematics mode, and
+worker success. When systematics are enabled, inspect nominal/up/down branches.
+For a derived jet value, verify each output branch against the matching
+systematic `jet_pt` branch.
