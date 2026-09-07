@@ -73,6 +73,12 @@ The `Output.commands` part of the config file accepts regular-expression pattern
 variables to disable. This applies to variables produced by any configured
 container or algorithm block. Note that by default only the basics are dumped. See example file above for syntax.
 
+Variables registered by a standard block with `noSys=True` remain nominal-only
+even when `runSystematics: true`. If the producing algorithm decorates a
+systematic container and one branch per variation is required, add an explicit
+`Output.vars` mapping whose source and destination use `%SYS%`, then verify the
+expanded branch names in the ROOT tree.
+
 Use anchors when disabling one exact variable:
 
 ```yaml
@@ -128,15 +134,27 @@ When running, check the log for a list of all the systematics to make sure the e
 Validate the input with `checkxAOD.py` and a ROOT `CollectionTree` check. Run a
 short smoke test before a full sample:
 
-Run a short smoke test with the standard `CPRun.py` entry point. This should be run in the `run` directory and will produce the output root file there as `output.root`. The `-e 5` will run just 5 events, which is great for smoke test.
+Run a short smoke test with the standard `CPRun.py` entry point. Run from the
+`run` directory and pass a basename such as `output.root` to `-o`; absolute or
+prefixed paths can be resolved inside EventLoop's worker staging area instead
+of at the intended destination. The `-e 5` limits processing to five events,
+which is useful for a smoke test.
 
 ```bash
 printf '%s\n' "$ALRB_Test_File" > input.txt
 CPRun.py -i input.txt -t config.yaml -o output.root -e 5 2>&1 | tee smoke.log
 ```
 
-Confirm CPRun reports `runSystematics: True`, the worker succeeds, and the ROOT
-file under `workDir/data-<streamName>/` (defaults to `workDir/data-ANALYSIS/`) contains an `analysis` tree with nominal and representative up/down output branches. For a derived jet variable, compare each output branch to the corresponding systematic jet input branch. Do not start an all-events run without estimating its cost.
+Confirm CPRun reports the requested systematics mode, the worker succeeds, and
+the final ROOT file contains the expected tree and branches. EventLoop may
+stage or fetch the tuple below its work directory before producing a merged
+top-level file, so do not assume a fixed `workDir/data-<streamName>/` path;
+locate and validate the actual output after worker success. When systematics
+are requested, inspect nominal and representative up/down branches. For a
+derived variable, compare each output branch to the corresponding systematic
+input branch. Remember that `-e N` limits processed events while configured
+filters can reduce the retained tree entries. Do not start an all-events run
+without estimating its cost.
 
 Preserve existing work, use `apply_patch` for edits, rerun CMake after adding
 files, and record release-specific gaps when the user requests durable notes.
