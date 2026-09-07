@@ -16,7 +16,21 @@ If creating from scratch, create a new directory with the package name in your `
 
 ## Package skeleton
 
-The following `CMakeLists.txt` should go at the root of your package directory (`MyAnalysis`):
+Keep the work-area project and each package in separate CMake layers. The
+top-level `source/CMakeLists.txt` should contain the project setup, including a
+version for `atlas_project`:
+
+```cmake
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+project(MyAnalysisProject VERSION 1.0.0)
+
+find_package(AnalysisBase REQUIRED)
+atlas_project(USE AnalysisBase "${AnalysisBase_VERSION}")
+```
+
+Put the following package-level `CMakeLists.txt` in
+`source/MyAnalysis/CMakeLists.txt`, alongside the package directories. Do not
+put `atlas_subdir` or package targets in the top-level project file:
 
 ```cmake
 atlas_subdir( MyAnalysis )
@@ -110,8 +124,9 @@ container types. Do not write all variations into one fixed decoration.
 
 ## CPRun configuration and ntuple output
 
-Plain CPRun YAML does not schedule arbitrary user components. Import a Python
-`ConfigBlock` and instantiate it in YAML:
+Plain CPRun YAML does not schedule arbitrary user components. Register a Python
+`ConfigBlock` factory and instantiate it in YAML. `modulePath` is the installed
+module path; modules installed by an ATLAS package are normally package-qualified:
 
 ```yaml
 AddConfigBlocks:
@@ -124,17 +139,31 @@ MyAlgorithm:
   containerName: AnaJets
 ```
 
-The installed module path follows the package layout under `python/`; for
-example `python/MyAnalysis/MyConfig.py` installs as `MyAnalysis.MyConfig`.
-The block must create the component and register its output:
+The factory must accept the configuration sequence and append the block;
+returning a block from a zero-argument function is not sufficient in
+AnalysisBase 25.2.x. Declare user-settable values with `addOption`; values are
+supplied in the separate root YAML stanza named by `algName`. The block creates
+the component and registers its output:
 
 ```python
-def makeAlgs(self, config):
-    alg = config.createAlgorithm(
-        "MyAnalysis::MyAlgorithm", "MyAlgorithm_" + self.containerName)
-    alg.jets = config.readName(self.containerName)
-    config.addOutputVar(
-        self.containerName, "myVariable_%SYS%", "myVariable")
+from AnalysisAlgorithmsConfig.ConfigBlock import ConfigBlock
+
+
+class MyConfigBlock(ConfigBlock):
+    def __init__(self):
+        super().__init__()
+        self.addOption("containerName", "", type=str)
+
+    def makeAlgs(self, config):
+        alg = config.createAlgorithm(
+            "MyAnalysis::MyAlgorithm", "MyAlgorithm_" + self.containerName)
+        alg.jets = config.readName(self.containerName)
+        config.addOutputVar(
+            self.containerName, "myVariable_%SYS%", "myVariable")
+
+
+def MyConfig(seq):
+    seq.append(MyConfigBlock())
 ```
 
 When `Output` maps `jet_` to `OutJets`, place the block before `Thinning` so
@@ -154,3 +183,4 @@ CPRun.py "$ALRB_Test_File" 5 2>&1 | tee smoke.log
 Check `output.root`, the `analysis` tree, `runSystematics: True`, worker
 success, and nominal/up/down branches. For a derived jet value, verify each
 output branch against the matching systematic `jet_pt` branch.
+
