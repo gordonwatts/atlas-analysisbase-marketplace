@@ -1,4 +1,4 @@
-# Codex ATLAS Analysis Workspace
+# ATLAS Analysis
 
 This repository packages the `atlas-analysis` Codex plugin. It is the
 ATLAS-specific workspace for skills that support a complete, reproducible
