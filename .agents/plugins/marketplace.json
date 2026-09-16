@@ -1,14 +1,14 @@
 {
-  "name": "atlas-analysisbase-marketplace",
+  "name": "atlas-analysis",
   "interface": {
-    "displayName": "Atlas Analysisbase Marketplace"
+    "displayName": "ATLAS Analysis"
   },
   "plugins": [
     {
-      "name": "atlas-analysisbase",
+      "name": "atlas-analysis",
       "source": {
         "source": "local",
-        "path": "./plugins/atlas-analysisbase"
+        "path": "./plugins/atlas-analysis"
       },
       "policy": {
         "installation": "AVAILABLE",

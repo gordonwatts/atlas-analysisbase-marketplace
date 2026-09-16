@@ -1,0 +1,24 @@
+{
+  "name": "atlas-analysis",
+  "version": "0.1.0",
+  "description": "CERN ATLAS analysis workflows, beginning with systematic-aware AnalysisBase work areas.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "ATLAS Analysis",
+    "shortDescription": "Build and run CERN ATLAS analyses.",
+    "longDescription": "Provides CERN ATLAS analysis skills, beginning with AnalysisBase work areas and leaving room for additional tested analysis stages.",
+    "developerName": "Local developer",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Create a systematic-aware AnalysisBase algorithm.",
+      "Configure small-R jet systematics and ntuple output.",
+      "Build and smoke-test my AnalysisBase work area."
+    ]
+  }
+}
