@@ -1,6 +1,6 @@
 ---
 name: find-atlas-datasets
-description: Find centrally produced ATLAS MC datasets for a physics process and campaign, verify AMI provenance and PMG job options, and report the evidence for each match. Use for MC sample discovery, DSID verification, or EVNT-to-derivation tracing.
+description: Find centrally produced ATLAS MC EVNT datasets for a physics process and campaign, verify AMI provenance and PMG job options, and report the evidence for each match. Use for MC sample discovery, DSID verification, or EVNT-to-derivation tracing. Finds only the MC EVNT records.
 ---
 
 # Find ATLAS datasets
@@ -9,7 +9,7 @@ Use this skill for a request containing a physics concept (for example, ttbar or
 
 ## Discover candidates
 
-1. Translate the request into catalog-visible tokens and synonyms that can be used to search AMI in step 2. Use the atlas-af MCP Atlas Search service, when available, to discover vocabulary from the physics description; record the actual terms tried. If it is unavailable or lacks coverage, use other authoritative ATLAS sources and say so. Resolve the requested run to the appropriate MC campaign and AMI catalog; check the catalog rather than assuming its name from the LDN. For example, an MC23 LDN can begin mc23_13p6TeV while the catalog is mc23_001:production.
+1. Translate the request into catalog-visible tokens and synonyms that can be used to search AMI in step 2. Use the atlas-af MCP Atlas Search service, when available, to discover vocabulary from the physics description; record the actual terms tried. If it is unavailable or lacks coverage, use other authoritative ATLAS sources and say so. Resolve the requested run to the appropriate MC campaign and AMI catalog; check the catalog rather than assuming its name from the LDN. For example, an MC23 LDN can begin mc23_13p6TeV while the catalog is mc23_001:production. Only scopes that start with `mc` or `data` are valid, unless explicitly requested otherwise.
 
 2. Search AMI EVNT records first. Try, in order when applicable: exact DSID; exact or wildcard physicsShort; generator and physics tokens; logical dataset name where supported; then PMG hashtags. Use direct AMI queries when a specialized helper returns no results. An empty hashtag result does not establish absence. Keep unsuccessful query routes in the search record.
 
@@ -25,7 +25,7 @@ Extract the executable MadGraph model, process and decay chain, mass and width p
 
 ## Report
 
-- Give a candidate table with DSID, full LDN, campaign, derivation, match status, and one of these confidence labels: **Confirmed by executable job options**, **Confirmed by AMI metadata only**, or **Plausible but not fully verified**.
+- Give a candidate table with DSID, full LDN, campaign, match status, and one of these confidence labels: **Confirmed by executable job options**, **Confirmed by AMI metadata only**, or **Plausible but not fully verified**. Only report back the EVNT file - the specific derivation will be decided later in the workflow.
 - For each candidate, briefly interpret the physics and cite the exact PMG files and include chain supporting its model, process, decay, masses, lifetime, filters, and generator settings. Separate observed configuration from inference.
 - Show the AMI provenance chain from EVNT through the requested derivation, with direct GitLab file links and AMI identifiers or links where available. Include key metadata and explicitly identify unavailable fields or unverified links.
 - List the search terms and routes tried. Explain failed searches, including catalog naming, missing metadata or hashtags, access limits, and Atlas Search index coverage as applicable. If no match is found, report the attempted routes and the remaining uncertainty; do not claim that a sample does not exist solely from empty search results.
