@@ -51,14 +51,13 @@ Assemble the working path yourself with `LocalXAODCodegen`,
    `voms-proxy-init --voms atlas` and stop if the user certificate is not
    available. Do not claim a download test passed without a non-zero proxy
    lifetime.
-3. Download exactly one file from the confirmed MC23 dataset. The file used by
-   the smoke test is `mc23_13p6TeV:DAOD_PHYSLITE.50426177._000001.pool.root.1`
-   from the dataset
-   `mc23_13p6TeV:mc23_13p6TeV.801166.Py8EG_A14NNPDF23LO_jj_JZ1.deriv.DAOD_PHYSLITE.e8514_e8586_s4618_s4619_r17610_r17609_p7266_tid50426177_00`.
-   Confirm the downloaded name, size, and Rucio checksum.
+3. For example, here is a Run 3 jet file: use it only if no specific file is
+   given by the user. Confirm the downloaded name, size, and Rucio checksum.
 4. Build a FuncADL PHYSLITE query that selects jets and extracts `pt` and
    `eta`. Convert `pt` from MeV to GeV in the query. Keep the first run to one
-   input file and use a fresh cache or `ignore_local_cache=True`.
+   input file and use a fresh cache or `ignore_local_cache=True`. Configure the
+   Python `logging` library at INFO level so the complete AnalysisBase runner
+   output is visible in the diagnostic log.
 5. Assemble the WSL path yourself: create `LocalXAODCodegen`,
    `WSL2ScienceImage("atlas_al9", release)`, and `SXLocalAdaptor`, then call
    the package's `deliver` with that adaptor. Do not replace this with

@@ -70,7 +70,8 @@ if ([string]::IsNullOrWhiteSpace($WslWork)) { throw 'Could not convert the Windo
 wsl -d atlas_al9 -- bash -ic "set -eo pipefail; setupATLAS >/dev/null; lsetup rucio >/dev/null; if ! voms-proxy-info -timeleft | grep -Eq '[1-9]'; then voms-proxy-init --voms atlas; fi; voms-proxy-info -timeleft | grep -Eq '[1-9]'; mkdir -p '$WslWork'; rucio get --no-subdir --dir '$WslWork' 'mc23_13p6TeV:DAOD_PHYSLITE.50426177._000001.pool.root.1'"
 ```
 
-The dataset containing this file is:
+For example, here is a Run 3 jet file. Use it only if no specific file is
+given by the user:
 
 ```text
 mc23_13p6TeV:mc23_13p6TeV.801166.Py8EG_A14NNPDF23LO_jj_JZ1.deriv.DAOD_PHYSLITE.e8514_e8586_s4618_s4619_r17610_r17609_p7266_tid50426177_00
@@ -106,7 +107,8 @@ CACHE_DIR = INPUT_FILE.parent / "servicex-cache"
 if not INPUT_FILE.is_file():
     raise FileNotFoundError(INPUT_FILE)
 
-logging.basicConfig(level=logging.DEBUG, force=True)
+# INFO is required to expose the complete AnalysisBase runner output.
+logging.basicConfig(level=logging.INFO, force=True)
 base_query = FuncADLQueryPHYSLITE()
 jet_query = (
     base_query
