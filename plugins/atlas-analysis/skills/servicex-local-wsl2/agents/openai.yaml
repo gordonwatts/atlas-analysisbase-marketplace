@@ -1,4 +1,0 @@
-interface:
-  display_name: "ServiceX Local WSL2"
-  short_description: "Debug ATLAS ServiceX transforms in WSL2"
-  default_prompt: "Use $servicex-local-wsl2 to reproduce a failing ATLAS PHYSLITE ServiceX transform locally in atlas_al9 and inspect the WSL log."

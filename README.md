@@ -8,9 +8,6 @@ The plugin currently provides:
 
 - `analysis-base`: CERN ATLAS AnalysisBase work areas, systematic-aware C++
   algorithms, small-R jet uncertainties, CPRun, and ntuple dumper output.
-- `servicex-local-wsl2`: Reproduce failing ATLAS PHYSLITE ServiceX transforms
-  in the `atlas_al9` WSL2 environment, including proxy checks, one-file Rucio
-  downloads, compatible AnalysisBase release selection, and local log review.
 - `find-atlas-datasets`: centrally produced MC sample discovery with AMI
   metadata and provenance checks, plus executable PMG job-options verification.
 
@@ -27,7 +24,6 @@ or Python guidance.
 plugins/atlas-analysis/
 └── skills/
     ├── analysis-base/
-    ├── servicex-local-wsl2/
     └── find-atlas-datasets/
 ```
 
