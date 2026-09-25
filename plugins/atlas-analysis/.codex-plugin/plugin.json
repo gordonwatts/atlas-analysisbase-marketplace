@@ -1,7 +1,7 @@
 {
   "name": "atlas-analysis",
   "version": "0.1.0",
-  "description": "CERN ATLAS analysis workflows, including AnalysisBase and MC dataset discovery.",
+  "description": "CERN ATLAS analysis workflows, including AnalysisBase, ServiceX Local WSL2 debugging, and MC dataset discovery.",
   "author": {
     "name": "Local developer"
   },
@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "ATLAS Analysis",
     "shortDescription": "Build and run CERN ATLAS analyses.",
-    "longDescription": "Provides CERN ATLAS analysis skills for AnalysisBase work areas and centrally produced MC dataset discovery.",
+    "longDescription": "Provides CERN ATLAS analysis skills for AnalysisBase work areas, local ServiceX debugging in WSL2, and centrally produced MC dataset discovery.",
     "developerName": "Local developer",
     "category": "Developer Tools",
     "capabilities": [
@@ -19,6 +19,7 @@
       "Create a systematic-aware AnalysisBase algorithm.",
       "Configure small-R jet systematics and ntuple output.",
       "Build and smoke-test my AnalysisBase work area.",
+      "Reproduce a failing ATLAS ServiceX PHYSLITE transform locally in WSL2 and inspect its logs.",
       "Find centrally produced MC samples and verify their PMG job options."
     ]
   }
