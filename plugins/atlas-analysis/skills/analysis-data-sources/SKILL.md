@@ -40,7 +40,9 @@ credentials or signed URLs in deliverables.
 
 Check that the Python dependencies and user-supplied ServiceX client configuration
 are available before probing. Catalog MCP authentication does not configure the
-Python delivery client. Inspect configuration presence without printing tokens;
+Python delivery client. A missing import is a dependency repair: prepare a local
+environment with uv when installation is within the task, rather than treating
+it as a ServiceX outage. Inspect configuration presence without printing tokens;
 do not include configuration files in returned artifacts.
 
 ## PHYSLITE first, with executable probes

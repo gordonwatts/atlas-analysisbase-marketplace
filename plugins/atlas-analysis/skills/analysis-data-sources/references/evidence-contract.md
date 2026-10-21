@@ -78,3 +78,11 @@ keys, uniqueness/overlap counts, object-matching rule and ambiguities.
 Finish with counts by status, reconciled with the Markdown table. Backup rows do
 not count as nominal coverage. A minimal successful probe does not validate the
 whole ledger.
+
+For track-count backups, check stored shape before choosing a template type.
+The [official OpenData PHYSLITE inventory](https://atlas-physlite-content-opendata.web.cern.ch/opendata_pp_physlite_variables.html)
+documents `AnalysisJets.NumTrkPt1000` as one vector of counts per jet, indexed
+by vertex, using ghost association and a loose track selection. It is not a
+scalar or the CalRatio hit-qualified cone count. Check the target production
+and installed package's vector template support; this inventory alone does
+not establish retention in another production or successful ServiceX access.
