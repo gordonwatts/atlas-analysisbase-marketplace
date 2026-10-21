@@ -38,6 +38,11 @@ credentials or signed URLs in deliverables.
   assume modern trigger names, luminosities, calibrations, cross sections,
   good-track definitions or generated lifetimes.
 
+Check that the Python dependencies and user-supplied ServiceX client configuration
+are available before probing. Catalog MCP authentication does not configure the
+Python delivery client. Inspect configuration presence without printing tokens;
+do not include configuration files in returned artifacts.
+
 ## PHYSLITE first, with executable probes
 
 1. Start with compatible **DAOD_PHYSLITE** samples for relevant sample classes.
@@ -116,7 +121,9 @@ Read [the evidence contract](references/evidence-contract.md). Deliver:
   requirement, plus clearly marked backup rows. Columns: item/proposed column;
   short purpose/threshold; scope/type/cardinality; extraction tool and exact code
   reference/accessor (or formula/dependencies); native-to-returned units (blank
-  if dimensionless); derivation/source; status/evidence IDs. Link long probe
+  if dimensionless); derivation/source; status/evidence IDs. Escape Markdown pipes
+  in formulas (for example absolute eta). Keep types separate from units and
+  name the actual external retrieval tool for metadata. Link long probe
   details instead of repeating DIDs in every row.
 - `data-source-evidence.json`, the requirements/probe ledger, and `probes/`
   containing executable code, dependency versions, output inspections and
