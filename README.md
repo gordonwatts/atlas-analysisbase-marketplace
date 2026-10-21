@@ -8,7 +8,7 @@ The plugin currently provides:
 
 - `analysis-base`: CERN ATLAS AnalysisBase work areas, systematic-aware C++
   algorithms, small-R jet uncertainties, CPRun, and ntuple dumper output.
-- nalysis-data-sources: specification-to-extraction tables, PHYSLITE-first
+- `analysis-data-sources`: specification-to-extraction tables, PHYSLITE-first
   ServiceX verification, scoped evidence, richer-format gaps and explicit backups.
 - ind-atlas-datasets: centrally produced MC sample discovery with AMI
   metadata and provenance checks, plus executable PMG job-options verification.
@@ -65,7 +65,8 @@ Below are some of the prompts used to test this still (sub-prompts means one pro
 Invoke `$atlas-analysis:analysis-data-sources` with an analysis specification and
 any existing dataset manifest. Install the IRIS-HEP ServiceX and UChicago AF
 plugins for executable xAOD probes and catalog/metadata access. The skill writes
-`data-sources.md`, `data-source-evidence.json` and reproducible probe artifacts.
+`data-sources.md` and a compact, self-contained `data-source-evidence.json` in
+the analysis workspace root. Probe code and full logs stay local unless requested.
 It distinguishes ServiceX-tested fields from external metadata, missing content,
 unverified proposals and PHYSLITE-only backups. Incomplete coverage is reported
 explicitly; a successful one-file smoke query is not full analysis validation.

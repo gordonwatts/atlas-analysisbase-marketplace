@@ -18,6 +18,29 @@ blocker. Do not substitute direct input ROOT reads for ServiceX extraction tests
 Reading ServiceX-returned ROOT files with uproot is appropriate. Never put
 credentials or signed URLs in deliverables.
 
+## Output locations and checkpoints
+
+Resolve the analysis workspace once, normally the directory containing the input
+specification. Unless the user explicitly chooses another output directory,
+write both `data-sources.md` and `data-source-evidence.json` directly in that
+workspace root, beside the input specification. `probes/data-source-evidence.json`
+is not the requested deliverable. Do not derive output locations from a worker's
+current directory.
+
+Create the root evidence ledger before submitting probes, with the specification
+hash and known requirements marked unverified. Checkpoint it as evidence arrives;
+service, dependency or catalog failures must not prevent delivery of the ledger.
+The steering model owns this file; workers return records for it to merge.
+
+Keep executable probes, intermediate inventories, full logs, downloads and retry
+scripts in a local working directory such as `probes/`. Do not return or archive
+that directory by default. The Markdown and compact JSON must stand alone:
+include the exact successful query (plus essential helper definitions), sample,
+request/provenance, versions, observed columns/counts/ranges and short failure
+summaries in the JSON. Store shared information once and reference probe IDs;
+do not duplicate full Markdown prose or raw catalog listings. Return full debug
+artifacts only when the user asks for them.
+
 ## Inventory and sample scope
 
 - Assign stable requirement IDs and cite specification sections. Cover selections,
@@ -54,8 +77,8 @@ do not include configuration files in returned artifacts.
 2. Build small ServiceX probes with positive controls (event identity and ordinary
    kinematics), initially **NFiles=1**. Group safe related fields; isolate uncertain
    decorations/links/tools. Include event keys and preserve object alignment.
-   Fetch sideband inputs before analysis cuts. Save runnable code and dependency
-   versions. Use an event limit only if supported by the actual backend.
+   Fetch sideband inputs before analysis cuts. Retain runnable code locally and
+   record the executed query and dependency versions in the compact ledger. Use an event limit only if supported by the actual backend.
 3. Execute delivery and materialize lazy output paths. Inspect the returned tree:
    nonzero events, relevant nonempty collections, columns/types, finite/range
    checks, units and association integrity. Save counts and representative
@@ -121,15 +144,15 @@ Read [the evidence contract](references/evidence-contract.md). Deliver:
 
 - `data-sources.md`, with tables grouped by scope/sample role and one row per
   requirement, plus clearly marked backup rows. Columns: item/proposed column;
-  short purpose/threshold; scope/type/cardinality; extraction tool and exact code
-  reference/accessor (or formula/dependencies); native-to-returned units (blank
+  short purpose/threshold; scope/type/cardinality; extraction tool and exact accessor/query
+  record ID (or formula/dependencies); native-to-returned units (blank
   if dimensionless); derivation/source; status/evidence IDs. Escape Markdown pipes
   in formulas (for example absolute eta). Keep types separate from units and
-  name the actual external retrieval tool for metadata. Link long probe
-  details instead of repeating DIDs in every row.
-- `data-source-evidence.json`, the requirements/probe ledger, and `probes/`
-  containing executable code, dependency versions, output inspections and
-  failure logs, with relative links.
+  name the actual external retrieval tool for metadata. Reference compact JSON
+  probe records instead of repeating DIDs in every row or linking private files.
+- `data-source-evidence.json`, a compact requirements/probe ledger in the
+  workspace root. Include self-contained evidence for every positive claim;
+  local script/log paths alone are not evidence in a returned deliverable.
 - A conclusion stating nominal coverage, PHYSLITE-only coverage and physics cost,
   richer-format needs, unsupported sample roles, unresolved specification choices,
   unverified joins and actual model roles/repairs/blockers.
@@ -138,3 +161,10 @@ Reconcile every inventory requirement with a table row and ledger entry. Audit
 verified claims against observed columns, derived claims against verified
 dependencies, backups against semantic differences, and absence claims against
 scoped content evidence. Do not announce complete readiness with required gaps.
+
+Before finishing, run this skill's `scripts/validate_evidence.py` with a Python
+interpreter and `--workspace` set to the absolute analysis workspace. It checks
+the two root deliverables, JSON structure, input hash and evidence references;
+it does not replace scientific review. Repair reported errors, then confirm the
+files exist at those exact paths and the Markdown counts match the ledger.
+Even a blocked analysis must return a valid ledger and an honest incomplete table.
