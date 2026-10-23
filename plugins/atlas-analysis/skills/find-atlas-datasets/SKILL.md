@@ -20,6 +20,15 @@ catalog discovery: resolve candidates at the proposed tier when possible and
 label their analysis compatibility provisional. If no tier is proposed, retain
 that role as an unresolved row rather than choosing a tier silently.
 
+Before catalog expansion, build a role-to-source plan using the
+[dataset table contract](references/dataset-table.md). Cite the specification
+for required versus conditional roles and distinguish physical sources, event
+selections and external dependencies. Older ledgers may lack this plan: derive
+it from the specification without rewriting their evidence. Resolve required
+sources first; an optional contamination audit does not require every available
+electroweak/top sample. Preserve exact signal parameter pairs rather than
+creating a Cartesian product. State year/campaign assumptions explicitly.
+
 For Standard Model background MC, consult the applicable official ATLAS central
 recommendation page or centrally maintained sample list first. Resolve the
 recommended nominal DSIDs/generators for the requested run, energy and campaign
@@ -53,6 +62,9 @@ data-driven background roles (including ABCD/control/sideband data); MC validati
 samples do not replace them. List unavailable signal points or special streams
 as gaps. Avoid duplicate productions and overlapping container/member entries;
 explain how slices, periods and campaigns combine without double counting.
+Apply the contract's overlap and missing-source classification before expanding
+rows or proposing new production. Empty containers and superseded/unusable
+productions belong in rejected candidates, never selected inputs.
 
 Write `datasets.md` using the [dataset table contract](references/dataset-table.md):
 a Markdown table of all datasets required by the input inventory, with complete

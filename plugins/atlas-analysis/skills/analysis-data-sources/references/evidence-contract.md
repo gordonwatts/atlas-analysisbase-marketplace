@@ -53,6 +53,18 @@ luminosity-block or derived; dimensionless units are empty strings.
 | `unavailable` | Scoped retained-content evidence with a successful positive control; not just an API/network error |
 | `unverified` | Proposed source or blocker and a concrete next action |
 
+## Role-to-source plan
+
+Include a compact role-to-source table in the Markdown. Optionally add
+`sample_roles` to the version-1 JSON ledger, with records containing `id`,
+`spec_ref`, `requiredness` (required/conditional/alternative),
+`activation_condition`, `source_kind` (event_source/selection/external),
+`parent_role_id` (null if unknown), `requirement_ids`, `period_scope`, and
+`relationship_evidence` (including checks still needed). All role/requirement
+references must resolve. These describe planning intent, not successful probes.
+Existing version-1 ledgers without this optional collection remain valid;
+downstream discovery derives the plan from their Markdown and specification.
+
 ## Probe records
 
 Every probe has unique `id`, `status` (`succeeded`, `failed` or `blocked`) and
