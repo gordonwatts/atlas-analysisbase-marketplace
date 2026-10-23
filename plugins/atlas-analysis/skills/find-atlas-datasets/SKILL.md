@@ -15,7 +15,10 @@ sample roles, chosen tiers, exact leaves/accessors, requirement IDs, production
 constraints and unresolved gaps as the input contract. Check that the ledger
 identifies the supplied specification. Do not silently restart tier selection,
 promote a backup to nominal, or assume a field tested on one sample is present
-in every production. An unresolved tier remains an explicit blocker.
+in every production. An unresolved tier blocks nominal readiness, not independent
+catalog discovery: resolve candidates at the proposed tier when possible and
+label their analysis compatibility provisional. If no tier is proposed, retain
+that role as an unresolved row rather than choosing a tier silently.
 
 For Standard Model background MC, consult the applicable official ATLAS central
 recommendation page or centrally maintained sample list first. Resolve the
@@ -28,6 +31,13 @@ are inaccessible, absent, or incompatible with a required tier, record the gap
 and label alternatives provisional, with the reason for deviating. PMG job
 options establish generated physics; they alone do not establish recommended
 nominal status.
+
+When installed, use `atlas:centralpage` for the PMG Central Page workflow,
+including its level-3 **Baseline** hashtags, and `af-uchicago` for brokered
+AMI/Rucio access through `atlas-af`. Record the actual hashtag path/campaign and
+returned default samples; an arbitrary centrally produced sample is not
+necessarily the declared baseline. Prefer available MCP catalog tools over
+setting up a separate CLI credential stack.
 
 Resolve those choices through the MC discovery and verification steps below to
 the actual requested derivation. Return complete Rucio `scope:name` DIDs with
