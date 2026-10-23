@@ -52,6 +52,13 @@ dataset metadata, the EVNT-to-derivation provenance chain, the PMG include chain
 and a confidence label that distinguishes executable job-options evidence from
 AMI-only or incomplete matches.
 
+With an analysis specification, `data-sources.md` and
+`data-source-evidence.json`, it instead resolves the selected tiers to complete
+Rucio DIDs in `datasets.yaml`, with supporting evidence in
+`dataset-selection.md`. Standard Model background choices prefer applicable
+official central nominal recommendations. Missing samples, inaccessible
+recommendations and unverified field compatibility remain explicit gaps.
+
 ## Test Prompts
 
 Below are some of the prompts used to test this still (sub-prompts means one prompt built on the previous prompts).

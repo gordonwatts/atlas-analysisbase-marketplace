@@ -1,11 +1,55 @@
 ---
 name: find-atlas-datasets
-description: Find centrally produced ATLAS MC EVNT datasets for a physics process and campaign, verify AMI provenance and PMG job options, and report the evidence for each match. Use for MC sample discovery, DSID verification, or EVNT-to-derivation tracing. Finds only the MC EVNT records.
+description: Find ATLAS datasets for a physics process or an analysis specification and data-source contract. Verify MC provenance and PMG job options, prefer official central Standard Model background recommendations, and resolve complete Rucio DIDs for the required data tiers. Use for sample discovery, DSID verification, or EVNT-to-derivation tracing.
 ---
 
 # Find ATLAS datasets
 
 Use this skill for a request containing a physics concept (for example, ttbar or jets), a run or MC campaign, and optional process, decay, generator, or derivation constraints. Return candidates with enough evidence to distinguish the generated physics from a suggestive dataset name. Keep this a read-only discovery workflow.
+
+## Analysis-ready dataset selection
+
+When supplied an analysis prompt/specification and the preceding data-source
+mapping, read `data-sources.md` and `data-source-evidence.json` together. Use their
+sample roles, chosen tiers, exact leaves/accessors, requirement IDs, production
+constraints and unresolved gaps as the input contract. Check that the ledger
+identifies the supplied specification. Do not silently restart tier selection,
+promote a backup to nominal, or assume a field tested on one sample is present
+in every production. An unresolved tier remains an explicit blocker.
+
+For Standard Model background MC, consult the applicable official ATLAS central
+recommendation page or centrally maintained sample list first. Resolve the
+recommended nominal DSIDs/generators for the requested run, energy and campaign
+before searching AMI. Record the page URL, section/list version and access date,
+and distinguish nominal samples from systematic alternatives. Use the declared
+defaults when available and compatible with the analysis contract; do not replace
+them just because another sample is easier to find or newer. If recommendations
+are inaccessible, absent, or incompatible with a required tier, record the gap
+and label alternatives provisional, with the reason for deviating. PMG job
+options establish generated physics; they alone do not establish recommended
+nominal status.
+
+Resolve those choices through the MC discovery and verification steps below to
+the actual requested derivation. Return complete Rucio `scope:name` DIDs with
+all production tags, corroborated by read-only catalog queries. A bare DSID,
+unscoped LDN, wildcard, file URL or EVNT ancestor is not an analysis-ready DID.
+Record whether each DID is a dataset or container; verify a container's members
+against the requested tier and coverage. Keep EVNT ancestors as provenance.
+
+Cover the specification's data periods/streams, background MC, signal parameter
+points and special streams separately. Real data has no EVNT or PMG job options:
+verify its run/period, stream, reconstruction and derivation directly. Preserve
+data-driven background roles (including ABCD/control/sideband data); MC validation
+samples do not replace them. List unavailable signal points or special streams
+as gaps. Avoid duplicate productions and overlapping container/member entries;
+explain how slices, periods and campaigns combine without double counting.
+
+Write `datasets.yaml` using the [manifest contract](references/manifest.md), plus
+`dataset-selection.md` with the recommendation and catalog evidence, coverage,
+exceptions and blockers. Separate verified dataset identity from accessor
+compatibility: reuse probe evidence only within its tested scope; new production
+compatibility remains unverified unless checked. Never invent a DID to fill a
+missing role. A blocked search must still return an honest partial manifest.
 
 ## Discover candidates
 
@@ -25,7 +69,7 @@ Extract the executable MadGraph model, process and decay chain, mass and width p
 
 ## Report
 
-- Give a candidate table with DSID, full LDN, campaign, match status, and one of these confidence labels: **Confirmed by executable job options**, **Confirmed by AMI metadata only**, or **Plausible but not fully verified**. Only report back the EVNT file - the specific derivation will be decided later in the workflow.
+- Give a candidate table with DSID, full LDN, campaign, match status, and one of these confidence labels: **Confirmed by executable job options**, **Confirmed by AMI metadata only**, or **Plausible but not fully verified**. For physics-only discovery without a selected data tier, report EVNT records. When a data-source contract or explicit derivation is supplied, return the resolved analysis-tier DIDs and retain EVNT records as provenance.
 - For each candidate, briefly interpret the physics and cite the exact PMG files and include chain supporting its model, process, decay, masses, lifetime, filters, and generator settings. Separate observed configuration from inference.
 - Show the AMI provenance chain from EVNT through the requested derivation, with direct GitLab file links and AMI identifiers or links where available. Include key metadata and explicitly identify unavailable fields or unverified links.
 - List the search terms and routes tried. Explain failed searches, including catalog naming, missing metadata or hashtags, access limits, and Atlas Search index coverage as applicable. If no match is found, report the attempted routes and the remaining uncertainty; do not claim that a sample does not exist solely from empty search results.
