@@ -52,7 +52,9 @@ expand periods only when included in the stated scenario.
 
 Classify gaps as: selection on an existing source; unverified retention or
 provenance; missing derivation of a known parent; unresolved physics production;
-external metadata; or optional scope decision. A failed search alone does not
+external metadata; required scope decision; or optional activation decision.
+Choosing the analysis years is required, even when a discovery scenario is
+provisional; it is not an optional physics role. A failed search alone does not
 establish a missing production. GRLs, conditions and joins are dependencies, not
 invented event datasets. Keep empty, superseded and unusable sources in a separate
 rejected-candidates table; they do not count toward required-source coverage.
