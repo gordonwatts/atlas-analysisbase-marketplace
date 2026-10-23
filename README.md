@@ -54,8 +54,8 @@ AMI-only or incomplete matches.
 
 With an analysis specification, `data-sources.md` and
 `data-source-evidence.json`, it instead resolves the selected tiers to complete
-Rucio DIDs in `datasets.yaml`, with supporting evidence in
-`dataset-selection.md`. Standard Model background choices prefer applicable
+Rucio DIDs in a `datasets.md` Markdown table, with supporting evidence and
+unresolved rows for required samples that could not be found. Standard Model background choices prefer applicable
 official central nominal recommendations. Missing samples, inaccessible
 recommendations and unverified field compatibility remain explicit gaps.
 

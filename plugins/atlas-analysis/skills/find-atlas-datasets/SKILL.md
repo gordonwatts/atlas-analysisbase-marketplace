@@ -44,12 +44,15 @@ samples do not replace them. List unavailable signal points or special streams
 as gaps. Avoid duplicate productions and overlapping container/member entries;
 explain how slices, periods and campaigns combine without double counting.
 
-Write `datasets.yaml` using the [manifest contract](references/manifest.md), plus
-`dataset-selection.md` with the recommendation and catalog evidence, coverage,
-exceptions and blockers. Separate verified dataset identity from accessor
+Write `datasets.md` using the [dataset table contract](references/dataset-table.md):
+a Markdown table of all datasets required by the input inventory, with complete
+Rucio DIDs, recommendation and catalog evidence, coverage, exceptions and blockers.
+Reconcile every input sample role and data-access requirement with table rows or
+explicit unresolved entries; a representative smoke sample is not a complete
+analysis dataset list. Separate verified dataset identity from accessor
 compatibility: reuse probe evidence only within its tested scope; new production
 compatibility remains unverified unless checked. Never invent a DID to fill a
-missing role. A blocked search must still return an honest partial manifest.
+missing role. A blocked search must still return the table with unresolved rows.
 
 ## Discover candidates
 
