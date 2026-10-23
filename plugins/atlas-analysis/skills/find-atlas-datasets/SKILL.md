@@ -86,6 +86,17 @@ missing role. A blocked search must still return the table with unresolved rows.
 
 ## Verify each candidate
 
+Separate the central physics-sample default (DSID/generator) from a currently
+usable simulation/reconstruction/derivation production. Before selecting tags,
+check AMI tag descriptions and current official production advisories as well as
+dataset status. `VALID`, nonempty content, and `ALL EVENTS AVAILABLE` do not
+override a known tag/task warning. Date indexed recommendation snapshots; if
+newer evidence conflicts, resolve it or flag the selected row as blocked pending
+dataset/task-specific clearance. Check corrected productions without adding both
+old and new coverage. A generic warning may exempt some samples: establish its
+scope rather than rejecting every dataset with that tag. Record incomplete
+replacement production and unknown default status explicitly.
+
 Retrieve and record, where available, the full LDN, DSID, campaign, collision energy, data type and derivation, event and file counts, status, cross-section and filter efficiency, generator, tune, PDF, Athena release, physics description, keywords, process metadata, parent EVNT, and the simulation/reconstruction/derivation chain. Preserve values and units as reported. Mark a missing field as unavailable instead of filling it from the name or a related production. Do not classify the generated process solely from physicsShort or the LDN.
 
 Inspect the [official PMG MCJobOptions repository](https://gitlab.cern.ch/atlas-physics/pmg/mcjoboptions) for every candidate DSID at `<first-three-digits>xxx/<DSID>/` (for example, 537xxx/537840/). Read every .py file in that DSID directory. Follow every include(...) statement, including relative includes, until the shared executable implementation is reached; record the exact path chain. Use direct GitLab browsing or a read-only clone if needed. Atlas Search may not index this repository: an empty exact DSID or filename search is a search-index limitation, not evidence that job options are absent.
