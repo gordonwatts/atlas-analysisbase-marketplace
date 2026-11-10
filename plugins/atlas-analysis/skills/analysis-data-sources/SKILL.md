@@ -51,6 +51,10 @@ do not turn generated analysis code into maintained skill or benchmark source.
 Contracts name columns, types, cardinality, units, event keys, object indices and
 link alignment. Replay must inspect the original delivered values, with file
 hashes and request/file provenance; a locally repackaged smoke tree is insufficient.
+Use artifact paths relative to the retained bundle, or provide an explicit replay
+root/rebase option. Absolute worker/WSL paths alone make a copied delivery unusable
+on another host. Keep the original absolute paths as provenance, not as the only
+way to locate replay inputs.
 
 ## Inventory and sample scope
 
