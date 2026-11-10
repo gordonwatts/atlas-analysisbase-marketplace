@@ -61,6 +61,18 @@ artifacts only when the user asks for them.
   assume modern trigger names, luminosities, calibrations, cross sections,
   good-track definitions or generated lifetimes.
 
+Before probing, include a compact role-to-source plan for downstream dataset
+discovery. Cite the specification for each role's required/conditional/alternative
+status and activation condition. Distinguish physical event sources, selections
+on shared parents, and external metadata. Associate requirement IDs with roles;
+multiple ABCD regions or accessors do not imply separate datasets. Record exact
+signal parameter pairs and selected versus assumed years/campaigns. Do not expand
+optional background audits or unknown years into mandatory sample inventories.
+For possible shared sources, record retention/trigger/bunch-group and overlap
+checks needed; do not assume special-stream samples are skims of collision Main.
+Preserve unresolved parent relationships. Include this plan in the Markdown;
+the optional JSON representation is described in the evidence contract.
+
 Check that the Python dependencies and user-supplied ServiceX client configuration
 are available before probing. Catalog MCP authentication does not configure the
 Python delivery client. A missing import is a dependency repair: prepare a local
