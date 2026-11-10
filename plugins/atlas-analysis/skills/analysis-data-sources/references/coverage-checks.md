@@ -27,6 +27,22 @@ a richer-tier test with production provenance, event joins and object matching.
 Expected species and required decay details come from the supplied analysis;
 LLPs and displaced vertices are not universal requirements for unrelated analyses.
 
+Report production-vertex and decay-vertex validity and geometry separately.
+Requiring both before reporting any geometry can hide retained decay positions
+when production links were slimmed. Flight length/proper time still needs both.
+Truth can be split across retained companion containers: inspect relevant
+collections before declaring a tier-wide absence, and use event identity plus
+stable particle identifiers, compatible four-momenta and explicit link checks
+for any cross-container association. A per-container index is not a global
+particle identity. Keep any richer-tier or companion-container join provisional
+until overlaps, ambiguities and missing objects have been measured.
+
+Reuse supplied successful queries and helper definitions before rewriting
+accessors. When a new collection-valued helper fails translation, separate that
+API/code-generation error from retained-content evidence and isolate the return
+shape. Preserve the backend's actual tree/column shapes in the output contract;
+do not repackage a kinematic smoke tree to make an original-delivery check pass.
+
 Retrieve raw inputs and validity needed to reconstruct the analysis quantities.
 For CalRatio this includes calorimeter sampling/energy ingredients and invalid or
 non-positive denominators, plus track kinematics, quality/hits, vertex/pile-up
