@@ -17,6 +17,9 @@ finish the inventory and mark affected sources **unverified**, with the exact
 blocker. Do not substitute direct input ROOT reads for ServiceX extraction tests.
 Reading ServiceX-returned ROOT files with uproot is appropriate. Never put
 credentials or signed URLs in deliverables.
+Use a strict allowlist when recording ServiceX status (request ID, counts,
+state, code-generator/backend version). Whole status/model dumps can contain
+client credentials and signed URLs, including in failure records.
 
 ## Output locations and checkpoints
 
@@ -40,6 +43,14 @@ request/provenance, versions, observed columns/counts/ranges and short failure
 summaries in the JSON. Store shared information once and reference probe IDs;
 do not duplicate full Markdown prose or raw catalog listings. Return full debug
 artifacts only when the user asks for them.
+
+When reusable extraction is requested, retain exact executable queries, dependency
+lock/version information, output contracts and an offline replay command alongside
+the deliveries. Honor the project's configured bulk-data root for these outputs;
+do not turn generated analysis code into maintained skill or benchmark source.
+Contracts name columns, types, cardinality, units, event keys, object indices and
+link alignment. Replay must inspect the original delivered values, with file
+hashes and request/file provenance; a locally repackaged smoke tree is insufficient.
 
 ## Inventory and sample scope
 
@@ -113,6 +124,13 @@ Use the ServiceX skill's local diagnostic procedure for failed hosted queries
 when appropriate, retaining both results. Local executor success must say which
 executor was tested; it does not erase a hosted failure. If worker logs cannot be
 retrieved, preserve the request ID/blocker and continue independent probes.
+
+For trigger, signal truth and raw reconstruction coverage read
+[coverage checks](references/coverage-checks.md). These are distinct from a
+kinematic positive control. If an acceptance contract is supplied, checkpoint
+each requested coverage block even when blocked; validate it with `--acceptance`
+and use `--require-complete` only to test a completeness claim. A structurally
+valid incomplete ledger is a useful result, not a successful extraction benchmark.
 
 ## Backups, metadata and combinations
 

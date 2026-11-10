@@ -102,6 +102,47 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(validator.EvidenceError, "backup_for"):
             self.check()
 
+    def coverage(self, status="unverified"):
+        self.acceptance = self.workspace / "acceptance.json"
+        self.acceptance.write_text(json.dumps({"schema_version": 1, "coverage": [
+            {"id": "signal", "sample_role": "signal-mc", "checks": ["species"]}]}))
+        self.data["coverage"] = [{"id": "signal", "sample_role": "signal-mc", "checks": {
+            "species": {"status": status, "probe_ids": ["p1"] if status == "verified" else [],
+                        "columns": ["pdg_id"], "summary": "Expected species or explicit blocker"}}}]
+        self.save()
+
+    def test_incomplete_coverage_is_valid_but_not_complete(self):
+        self.coverage()
+        self.assertFalse(validator.validate(self.workspace, self.acceptance)["coverage_complete"])
+        with self.assertRaisesRegex(validator.EvidenceError, "Incomplete coverage"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_data_kinematics_cannot_verify_signal_coverage(self):
+        self.success()
+        self.data["probes"][0]["sample_role"] = "collision-data"
+        self.coverage("verified")
+        with self.assertRaisesRegex(validator.EvidenceError, "for signal-mc"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_generic_truth_cannot_verify_unobserved_species_column(self):
+        self.success()
+        self.data["probes"][0]["sample_role"] = "signal-mc"
+        self.coverage("verified")
+        with self.assertRaisesRegex(validator.EvidenceError, "column absent"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_complete_scoped_observations(self):
+        self.success()
+        self.data["probes"][0]["sample_role"] = "signal-mc"
+        self.data["probes"][0]["observations"]["columns"]["pdg_id"] = {"counts": {"25": 3}}
+        self.coverage("verified")
+        self.assertTrue(validator.validate(self.workspace, self.acceptance, True)["coverage_complete"])
+
+    def test_completeness_cannot_ignore_contract(self):
+        self.save()
+        with self.assertRaisesRegex(validator.EvidenceError, "needs an analysis-specific"):
+            validator.validate(self.workspace, require_complete=True)
+
 
 if __name__ == "__main__":
     unittest.main()
