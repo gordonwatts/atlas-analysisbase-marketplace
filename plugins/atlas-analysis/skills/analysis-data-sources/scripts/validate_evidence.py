@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["typer>=0.12"]
+# ///
 """Check evidence structure and optional analysis-specific coverage; no services."""
 import hashlib
 import json
@@ -36,7 +40,7 @@ def references(row, key):
     return values
 
 
-def validate_coverage(data, probes, acceptance, require_complete):
+def validate_coverage(data, probes, acceptance, require_complete, workspace):
     expected = index_records(acceptance.get("coverage"), "acceptance coverage")
     actual = index_records(data.get("coverage"), "coverage")
     missing = []
@@ -75,6 +79,39 @@ def validate_coverage(data, probes, acceptance, require_complete):
                  f"{label}: observed columns required")
             observed = set().union(*(p["observations"]["columns"].keys() for p in evidence))
             need(set(columns) <= observed, f"{label}: column absent from scoped observations")
+            rule = contract.get("evidence_rules", {}).get(name, {})
+            required = rule.get("required_columns", [])
+            need(isinstance(required, list) and all(isinstance(x, str) for x in required),
+                 f"{label}: invalid required_columns rule")
+            need(set(required) <= set(columns), f"{label}: required columns not evidenced")
+            if rule.get("kind") == "expected_particles":
+                species = check.get("expected_pdg_ids")
+                need(isinstance(species, list) and species
+                     and all(type(x) is int and x != 0 for x in species),
+                     f"{label}: expected PDG IDs required")
+                sources = check.get("expectation_probe_ids", [])
+                need(isinstance(sources, list) and sources and all(
+                    isinstance(x, str) and x in probes
+                    and probes[x].get("transport") == "external"
+                    and probes[x].get("status") == "succeeded"
+                    and (probes[x].get("source") or probes[x].get("query"))
+                    for x in sources), f"{label}: independent expectation provenance required")
+                for pdg in species:
+                    counts = [p["observations"].get("species_counts", {}).get(str(pdg), 0)
+                              for p in evidence]
+                    need(any(type(n) is int and n > 0 for n in counts),
+                         f"{label}: expected PDG {pdg} not observed with positive count")
+    artifacts = acceptance.get("artifacts", [])
+    need(isinstance(artifacts, list) and all(isinstance(x, str) for x in artifacts),
+         "acceptance artifacts must be a list of relative file paths")
+    for name in artifacts:
+        path = Path(name)
+        need(not path.is_absolute() and ".." not in path.parts,
+             "acceptance artifact paths must stay inside the workspace")
+        target = (workspace / path).resolve()
+        need(target.is_relative_to(workspace), "acceptance artifact escapes workspace")
+        if not target.is_file() or not target.stat().st_size:
+            missing.append("artifact:" + name)
     need(not require_complete or not missing, "Incomplete coverage: " + ", ".join(missing))
     return {"coverage_complete": not missing, "missing_coverage": missing}
 
@@ -144,7 +181,7 @@ def validate(workspace, acceptance=None, require_complete=False):
         contract = json.loads(Path(acceptance).read_text(encoding="utf-8"))
         need(isinstance(contract, dict) and contract.get("schema_version") == 1,
              "Expected acceptance object with schema_version 1")
-        result.update(validate_coverage(data, probes, contract, require_complete))
+        result.update(validate_coverage(data, probes, contract, require_complete, workspace))
     return result
 
 

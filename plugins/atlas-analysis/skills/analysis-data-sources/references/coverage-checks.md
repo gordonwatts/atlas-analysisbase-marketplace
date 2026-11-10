@@ -56,3 +56,18 @@ requires the declared blocks/checks and rejects unsupported positive claims.
 These structural checks do not replace inspecting ROOT values or independently
 reviewing expected species and physics equivalence. Return missing coverage
 explicitly; never create synthetic deliveries to satisfy a benchmark.
+
+An acceptance block can additionally declare `evidence_rules`, keyed by check
+name. `required_columns` lists columns that must be evidenced for that check.
+For `kind: expected_particles`, the ledger check must record `expected_pdg_ids`
+(signed integer IDs), `expectation_probe_ids` pointing to successful external
+source/query records, and the scoped ServiceX observations must contain
+`species_counts` keyed by signed PDG ID with a positive integer count for every
+expected species. This prevents generic truth or the wrong species from
+satisfying a declared signal-species check; review the independent source to
+establish that these really are the analysis's expected particles.
+
+The acceptance root can list `artifacts` as relative file paths. Missing or empty
+files appear in `missing_coverage` and fail `--require-complete`; the incomplete
+ledger itself remains valid. Completeness here is extraction evidence, not
+approval of calibrations, production quality or the physics analysis.

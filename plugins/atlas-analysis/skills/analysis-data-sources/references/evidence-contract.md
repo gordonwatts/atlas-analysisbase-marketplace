@@ -107,5 +107,10 @@ Create/checkpoint the root ledger while working, even when probes are blocked.
 Before reporting completion run `scripts/validate_evidence.py --workspace` using
 this skill's absolute script path and the absolute analysis workspace. It checks
 file location, JSON parsing, input hash and structural claim/reference consistency.
+Use `uv run <absolute-script> --workspace <absolute-workspace>` to prepare its
+declared Typer dependency. If the task supplies an acceptance JSON, add
+`--acceptance <absolute-contract>`; separately add `--require-complete` to test
+all requested coverage. Record both outcomes. See
+[coverage checks](coverage-checks.md) for that optional version-1 extension.
 Then reconcile the Markdown inventory/status counts and review scientific claims.
 Do not move the final ledger into `probes/` or substitute a link to it there.
