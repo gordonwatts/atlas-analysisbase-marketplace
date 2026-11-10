@@ -102,6 +102,88 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(validator.EvidenceError, "backup_for"):
             self.check()
 
+    def coverage(self, status="unverified"):
+        self.acceptance = self.workspace / "acceptance.json"
+        self.acceptance.write_text(json.dumps({"schema_version": 1, "coverage": [
+            {"id": "signal", "sample_role": "signal-mc", "checks": ["species"]}]}))
+        self.data["coverage"] = [{"id": "signal", "sample_role": "signal-mc", "checks": {
+            "species": {"status": status, "probe_ids": ["p1"] if status == "verified" else [],
+                        "columns": ["pdg_id"], "summary": "Expected species or explicit blocker"}}}]
+        self.save()
+
+    def test_incomplete_coverage_is_valid_but_not_complete(self):
+        self.coverage()
+        self.assertFalse(validator.validate(self.workspace, self.acceptance)["coverage_complete"])
+        with self.assertRaisesRegex(validator.EvidenceError, "Incomplete coverage"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_data_kinematics_cannot_verify_signal_coverage(self):
+        self.success()
+        self.data["probes"][0]["sample_role"] = "collision-data"
+        self.coverage("verified")
+        with self.assertRaisesRegex(validator.EvidenceError, "for signal-mc"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_generic_truth_cannot_verify_unobserved_species_column(self):
+        self.success()
+        self.data["probes"][0]["sample_role"] = "signal-mc"
+        self.coverage("verified")
+        with self.assertRaisesRegex(validator.EvidenceError, "column absent"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_complete_scoped_observations(self):
+        self.success()
+        self.data["probes"][0]["sample_role"] = "signal-mc"
+        self.data["probes"][0]["observations"]["columns"]["pdg_id"] = {"counts": {"25": 3}}
+        self.coverage("verified")
+        self.assertTrue(validator.validate(self.workspace, self.acceptance, True)["coverage_complete"])
+
+    def test_completeness_cannot_ignore_contract(self):
+        self.save()
+        with self.assertRaisesRegex(validator.EvidenceError, "needs an analysis-specific"):
+            validator.validate(self.workspace, require_complete=True)
+
+    def particle_rule(self, observed=35, expected=35):
+        self.success()
+        self.data["probes"][0].update(sample_role="signal-mc")
+        self.data["probes"][0]["observations"].update(
+            columns={"pdg_id": {}}, species_counts={str(observed): 2})
+        self.data["probes"].append({"id": "generator", "status": "succeeded",
+                                    "transport": "external", "source": "Executed generator source"})
+        self.coverage("verified")
+        d=json.loads(self.acceptance.read_text())
+        d["coverage"][0]["evidence_rules"]={"species": {"kind": "expected_particles",
+                                                                   "required_columns": ["pdg_id"]}}
+        self.acceptance.write_text(json.dumps(d))
+        self.data["coverage"][0]["checks"]["species"].update(
+            expected_pdg_ids=[expected], expectation_probe_ids=["generator"])
+        self.save()
+
+    def test_expected_particle_is_observed(self):
+        self.particle_rule()
+        self.assertTrue(validator.validate(self.workspace, self.acceptance, True)["coverage_complete"])
+
+    def test_wrong_species_cannot_satisfy_signal(self):
+        self.particle_rule(observed=5, expected=35)
+        with self.assertRaisesRegex(validator.EvidenceError, "PDG 35 not observed"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_expected_particle_needs_independent_provenance(self):
+        self.particle_rule()
+        self.data["coverage"][0]["checks"]["species"]["expectation_probe_ids"]=["p1"]
+        self.save()
+        with self.assertRaisesRegex(validator.EvidenceError, "independent expectation"):
+            validator.validate(self.workspace, self.acceptance, True)
+
+    def test_required_artifacts_remain_explicitly_incomplete(self):
+        self.particle_rule()
+        d=json.loads(self.acceptance.read_text());d["artifacts"]=["replay.py"]
+        self.acceptance.write_text(json.dumps(d))
+        result=validator.validate(self.workspace,self.acceptance)
+        self.assertIn("artifact:replay.py",result["missing_coverage"])
+        with self.assertRaisesRegex(validator.EvidenceError,"Incomplete coverage"):
+            validator.validate(self.workspace,self.acceptance,True)
+
 
 if __name__ == "__main__":
     unittest.main()
