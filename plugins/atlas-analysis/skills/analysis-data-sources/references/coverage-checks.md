@@ -32,7 +32,8 @@ Requiring both before reporting any geometry can hide retained decay positions
 when production links were slimmed. Flight length/proper time still needs both.
 Truth can be split across retained companion containers: inspect relevant
 collections before declaring a tier-wide absence, and use event identity plus
-stable particle identifiers, compatible four-momenta and explicit link checks
+stable particle identifiers or a measured unambiguous composite key, compatible
+four-momenta and explicit link checks
 for any cross-container association. A per-container index is not a global
 particle identity. Keep any richer-tier or companion-container join provisional
 until overlaps, ambiguities and missing objects have been measured.
